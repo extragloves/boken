@@ -15,9 +15,7 @@ const pages = [
     title: "Boken Mitt Hjärta",
     heading: "Välkommen",
     canonical: "/",
-    shortlink: "/",
-    bodyClass:
-      "home wp-singular page-template page-template-page-templates page-template-page_fullwidth page-template-page-templatespage_fullwidth-php page page-id-2 custom-background wp-theme-astrid",
+    bodyClass: "home page page-id-2 custom-background",
   },
   {
     slug: "sten",
@@ -27,9 +25,7 @@ const pages = [
     title: "Varför jag skrev boken &#8211; Boken Mitt Hjärta",
     heading: "Varför jag skrev boken",
     canonical: "/sten/",
-    shortlink: "/?p=37",
-    bodyClass:
-      "wp-singular page-template-default page page-id-37 custom-background wp-theme-astrid",
+    bodyClass: "page page-id-37 custom-background",
   },
   {
     slug: "birgitta",
@@ -39,9 +35,7 @@ const pages = [
     title: "Birgitta &#8211; Boken Mitt Hjärta",
     heading: "Birgitta",
     canonical: "/birgitta/",
-    shortlink: "/?p=35",
-    bodyClass:
-      "wp-singular page-template-default page page-id-35 custom-background wp-theme-astrid",
+    bodyClass: "page page-id-35 custom-background",
   },
   {
     slug: "medicin",
@@ -51,9 +45,7 @@ const pages = [
     title: "Medicinska frågor som berörs i boken &#8211; Boken Mitt Hjärta",
     heading: "Medicinska frågor som berörs i boken",
     canonical: "/medicin/",
-    shortlink: "/?p=43",
-    bodyClass:
-      "wp-singular page-template-default page page-id-43 custom-background wp-theme-astrid",
+    bodyClass: "page page-id-43 custom-background",
   },
   {
     slug: "lasarkommentarer",
@@ -63,9 +55,7 @@ const pages = [
     title: "Läsarkommentarer &#8211; Boken Mitt Hjärta",
     heading: "Läsarkommentarer",
     canonical: "/lasarkommentarer/",
-    shortlink: "/?p=39",
-    bodyClass:
-      "wp-singular page-template-default page page-id-39 custom-background wp-theme-astrid",
+    bodyClass: "page page-id-39 custom-background",
   },
   {
     slug: "lasarservice",
@@ -75,9 +65,7 @@ const pages = [
     title: "Läsarservice &#8211; Boken Mitt Hjärta",
     heading: "Läsarservice",
     canonical: "/lasarservice/",
-    shortlink: "/?p=41",
-    bodyClass:
-      "wp-singular page-template-default page page-id-41 custom-background wp-theme-astrid",
+    bodyClass: "page page-id-41 custom-background",
   },
   {
     slug: "kop",
@@ -87,9 +75,7 @@ const pages = [
     title: "Köp boken! &#8211; Boken Mitt Hjärta",
     heading: "Köp boken!",
     canonical: "/kop/",
-    shortlink: "/?p=45",
-    bodyClass:
-      "wp-singular page-template-default page page-id-45 custom-background wp-theme-astrid",
+    bodyClass: "page page-id-45 custom-background",
   },
   {
     slug: "kontakt",
@@ -99,9 +85,7 @@ const pages = [
     title: "Kontakt &#8211; Boken Mitt Hjärta",
     heading: "Kontakt",
     canonical: "/kontakt/",
-    shortlink: "/?p=47",
-    bodyClass:
-      "wp-singular page-template-default page page-id-47 custom-background wp-theme-astrid",
+    bodyClass: "page page-id-47 custom-background",
   },
 ];
 
@@ -235,14 +219,6 @@ ${html}
 </ul></div>`;
 }
 
-function oembedUrl(canonical) {
-  if (canonical === "/") {
-    return "https%3A%2F%2F%2F";
-  }
-  const slug = canonical.replace(/\//g, "");
-  return `https%3A%2F%2F%2F${slug}%2F`;
-}
-
 function replaceOne(html, regex, replacement, label) {
   if (!regex.test(html)) {
     throw new Error(`Failed replacement for ${label}`);
@@ -258,30 +234,7 @@ async function buildPage(page, homeSeed, innerSeed) {
 
   let html = template;
   html = replaceOne(html, /<title>[\s\S]*?<\/title>/, `<title>${page.title}</title>`, "title");
-  html = replaceOne(
-    html,
-    /<link rel="alternate" title="JSON" type="application\/json" href="[^"]+">/,
-    `<link rel="alternate" title="JSON" type="application/json" href="/wp-json/wp/v2/pages/${page.pageId}">`,
-    "json-link"
-  );
   html = replaceOne(html, /<link rel="canonical" href="[^"]+">/, `<link rel="canonical" href="${page.canonical}">`, "canonical");
-  html = replaceOne(html, /<link rel="shortlink" href="[^"]+">/, `<link rel="shortlink" href="${page.shortlink}">`, "shortlink");
-  html = replaceOne(
-    html,
-    /<link rel="alternate" title="oEmbed \(JSON\)" type="application\/json\+oembed" href="[^"]+">/,
-    `<link rel="alternate" title="oEmbed (JSON)" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=${oembedUrl(
-      page.canonical
-    )}">`,
-    "oembed-json"
-  );
-  html = replaceOne(
-    html,
-    /<link rel="alternate" title="oEmbed \(XML\)" type="text\/xml\+oembed" href="[^"]+">/,
-    `<link rel="alternate" title="oEmbed (XML)" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=${oembedUrl(
-      page.canonical
-    )}#038;format=xml">`,
-    "oembed-xml"
-  );
   html = replaceOne(html, /<body class="[^"]+">/, `<body class="${page.bodyClass}">`, "body-class");
   html = replaceOne(
     html,

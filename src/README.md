@@ -6,6 +6,7 @@
   - `src/templates/inner.seed.html`
 - Rebuild output pages with `npm run build`.
 - A pre-commit hook is included at `.githooks/pre-commit` to run the build automatically.
+- Static assets now live in `assets/` (no `wp-content`/`wp-includes` dependency).
 
 Generated output files:
 
