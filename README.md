@@ -22,6 +22,8 @@ Build output is written to:
 - `lasarservice/index.html`
 - `kop/index.html`
 - `kontakt/index.html`
+- `robots.txt`
+- `sitemap.xml`
 
 ## Folder Purpose
 
