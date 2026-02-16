@@ -226,6 +226,42 @@ function replaceOne(html, regex, replacement, label) {
   return html.replace(regex, replacement);
 }
 
+function addExternalLinkAttrs(html) {
+  return html.replace(/<a\b([^>]*?)>/gi, (fullMatch, attrs) => {
+    const hrefMatch = attrs.match(/\bhref="([^"]+)"/i);
+    if (!hrefMatch) {
+      return fullMatch;
+    }
+
+    const href = hrefMatch[1];
+    if (!/^https?:\/\//i.test(href)) {
+      return fullMatch;
+    }
+
+    let nextAttrs = attrs;
+
+    if (!/\btarget=/i.test(nextAttrs)) {
+      nextAttrs += ' target="_blank"';
+    }
+
+    const relMatch = nextAttrs.match(/\brel="([^"]*)"/i);
+    if (!relMatch) {
+      nextAttrs += ' rel="noopener noreferrer"';
+    } else {
+      const relValues = relMatch[1].split(/\s+/).filter(Boolean);
+      if (!relValues.includes("noopener")) {
+        relValues.push("noopener");
+      }
+      if (!relValues.includes("noreferrer")) {
+        relValues.push("noreferrer");
+      }
+      nextAttrs = nextAttrs.replace(/\brel="([^"]*)"/i, `rel="${relValues.join(" ")}"`);
+    }
+
+    return `<a${nextAttrs}>`;
+  });
+}
+
 async function buildPage(page, homeSeed, innerSeed) {
   const template = page.type === "home" ? homeSeed : innerSeed;
   const contentPath = path.join(ROOT, "src", "content", `${page.key}.html`);
@@ -259,6 +295,7 @@ async function buildPage(page, homeSeed, innerSeed) {
   html = replaceOne(html, navRegex, renderMainMenu(page.key), "main-menu");
   const footerRegex = /<div id="footer-menu" class="menu"><ul>[\s\S]*?<\/ul><\/div>/;
   html = replaceOne(html, footerRegex, renderFooterMenu(page.key), "footer-menu");
+  html = addExternalLinkAttrs(html);
 
   const outPath =
     page.slug === "" ? path.join(ROOT, "index.html") : path.join(ROOT, page.slug, "index.html");
