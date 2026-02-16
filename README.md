@@ -1,6 +1,6 @@
 # boken
 
-Static site for GitHub Pages.
+Static website for GitHub Pages (`www.bokenmitthjarta.se`).
 
 ## Requirements
 
@@ -12,7 +12,7 @@ Static site for GitHub Pages.
 npm run build
 ```
 
-Generates:
+Build output is written to:
 
 - `index.html`
 - `sten/index.html`
@@ -23,14 +23,32 @@ Generates:
 - `kop/index.html`
 - `kontakt/index.html`
 
-## Source
+## Folder Purpose
 
-- Templates: `src/templates/`
-- Page content: `src/content/`
-- Assets: `assets/`
-- Build script: `scripts/build.mjs`
+- `assets/`: static assets used by generated pages.
+- `assets/css/`: site styles and third-party CSS.
+- `assets/js/`: site JavaScript.
+- `assets/fonts/`: webfont files used by CSS.
+- `assets/img/`: site images.
+- `src/`: source content and templates for generation.
+- `src/content/`: per-page main content fragments.
+- `src/templates/`: shared page shells used by the build script.
+- `scripts/`: build scripts.
+- `scripts/build.mjs`: static generator.
+- `.githooks/`: optional local Git hooks.
+- `.githooks/pre-commit`: runs build before commit and stages generated pages.
+- `index.html`, `sten/`, `birgitta/`, `medicin/`, `lasarkommentarer/`, `lasarservice/`, `kop/`, `kontakt/`: generated deployable pages.
+- `CNAME`: GitHub Pages custom domain mapping.
+- `.claude/`: local tool settings (ignored by Git).
 
-## Git Hook (optional)
+## Workflow
+
+1. Edit content in `src/content/` and shared layout in `src/templates/`.
+2. Run `npm run build`.
+3. Review generated page diffs.
+4. Commit and push.
+
+## Optional Hook Setup
 
 ```bash
 git config core.hooksPath .githooks

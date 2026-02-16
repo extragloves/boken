@@ -1,25 +1,28 @@
-# Static Build Source
+# src
 
-- Edit page content in `src/content/*.html`.
-- Keep shared shell/layout in:
-  - `src/templates/home.seed.html`
-  - `src/templates/inner.seed.html`
-- Rebuild output pages with `npm run build`.
-- A pre-commit hook is included at `.githooks/pre-commit` to run the build automatically.
-- Static assets now live in `assets/` (no legacy CMS directory dependency).
+Source files used by `scripts/build.mjs`.
 
-Generated output files:
+## Structure
 
-- `index.html`
-- `sten/index.html`
-- `birgitta/index.html`
-- `medicin/index.html`
-- `lasarkommentarer/index.html`
-- `lasarservice/index.html`
-- `kop/index.html`
-- `kontakt/index.html`
+- `src/content/home.html`: content for `/`
+- `src/content/sten.html`: content for `/sten/`
+- `src/content/birgitta.html`: content for `/birgitta/`
+- `src/content/medicin.html`: content for `/medicin/`
+- `src/content/lasarkommentarer.html`: content for `/lasarkommentarer/`
+- `src/content/lasarservice.html`: content for `/lasarservice/`
+- `src/content/kop.html`: content for `/kop/`
+- `src/content/kontakt.html`: content for `/kontakt/`
+- `src/templates/home.seed.html`: shared shell for homepage output
+- `src/templates/inner.seed.html`: shared shell for inner pages
 
-To enable hooks in this repo:
+## Usage
 
-- `git config core.hooksPath .githooks`
+1. Edit files in `src/content/` and/or `src/templates/`.
+2. Run `npm run build`.
+3. Verify generated files at repo root and route folders.
+
+## Notes
+
+- Generated files are overwritten on each build.
+- Do not edit generated route files directly unless you intend to keep those edits in source too.
 
