@@ -275,7 +275,7 @@ select {
 .main-navigation ul ul {
 	float: left;
 	position: absolute;
-	top: 160%;
+	top: 100%;
 	left: -999em;
 	z-index: 99999;
 	background-color: #1C1E21;
