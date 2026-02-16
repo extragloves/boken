@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh repo view:*)",
+      "Bash(gh issue create --title \"Upgrade Bootstrap from 3.x to 5.x\" --body \"$\\(cat <<''EOF''\n## Summary\nThe site is using **Bootstrap 3.x**, which has reached end-of-life. The current latest version is **Bootstrap 5.3.x**.\n\n## Details\n- File: `wp-content/themes/astrid/css/bootstrap/bootstrap.min.css`\n- Bootstrap 3 has been EOL for years and no longer receives updates or security patches.\n\n## Notes\nThis is a breaking upgrade — Bootstrap 5 has significant API and class name changes compared to v3 \\(e.g., `col-xs-*` removed, jQuery dependency dropped, new utility classes\\). The HTML across all pages will need to be updated to match the new grid and component syntax.\nEOF\n\\)\")",
+      "Bash(gh issue create:*)"
+    ]
+  }
+}

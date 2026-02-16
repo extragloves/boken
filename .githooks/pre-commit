@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+set -e
+
+echo "Running static build..."
+npm run build
+
+# Ensure regenerated pages are included in the commit.
+git add index.html \
+  sten/index.html \
+  birgitta/index.html \
+  medicin/index.html \
+  lasarkommentarer/index.html \
+  lasarservice/index.html \
+  kop/index.html \
+  kontakt/index.html
