@@ -4,7 +4,7 @@ Agent-facing project notes for this repository.
 
 ## Project Type
 
-- Static site generated from source fragments and templates.
+- Static site generated from source fragments and templates (WordPress).
 - Deployment target: GitHub Pages.
 
 ## Core Commands
