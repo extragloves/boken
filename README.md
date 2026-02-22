@@ -1,4 +1,4 @@
-# Boken "Mitt Hjärta"
+# The book "Boken - Mitt Hjärta"
 
 🌐 Ex wordpress site converted to static and published on GitHub Pages (`www.bokenmitthjarta.se`).
 
@@ -13,4 +13,4 @@
 1. Edit content in `src/content/` and shared layout in `src/templates/`.
 2. Review your source changes.
 3. Commit (the pre-commit hook runs `npm run build` and stages regenerated route files and sitemap).
-4. Push.
+4. Push
