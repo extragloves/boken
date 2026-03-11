@@ -1,4 +1,4 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -167,6 +167,44 @@ const footerMenu = [
 ];
 
 const innerPagesInInfo = new Set(["sten", "birgitta", "medicin"]);
+
+const legacyRoutes = [
+  {
+    outputPath: ["feed", "index.html"],
+    title: "Flöde - Boken Mitt Hjärta",
+    heading: "Flöde",
+    canonical: "/",
+    description: "Det tidigare WordPress-flödet finns inte längre. Besök huvudsidan för aktuellt innehåll.",
+    bodyClass: "page page-id-2001 custom-background legacy-route",
+    targetLabel: "Välkommen",
+    targetHref: "/",
+    refreshHref: "/",
+  },
+  {
+    outputPath: ["author", "anders", "index.html"],
+    title: "Anders - Boken Mitt Hjärta",
+    heading: "Anders",
+    canonical: "/sten/",
+    description:
+      "Den tidigare WordPress-författarsidan finns inte längre. Besök sidan om författaren och bokens bakgrund i stället.",
+    bodyClass: "page page-id-2002 custom-background legacy-route",
+    targetLabel: "Varför jag skrev boken",
+    targetHref: "/sten/",
+    refreshHref: "/sten/",
+  },
+  {
+    outputPath: ["wp-login.php"],
+    title: "Inloggning - Boken Mitt Hjärta",
+    heading: "Inloggning",
+    canonical: "/",
+    description:
+      "WordPress-inloggningen finns inte längre eftersom webbplatsen nu drivs som en statisk webbplats.",
+    bodyClass: "page page-id-2003 custom-background legacy-route",
+    targetLabel: "Startsidan",
+    targetHref: "/",
+    refreshHref: "/",
+  },
+];
 
 function renderMainMenu(activeKey) {
   const infoActive = innerPagesInInfo.has(activeKey);
@@ -340,6 +378,18 @@ function buildSeoBlock(page, origin) {
   ].join("\n");
 }
 
+function buildLegacySeoBlock(route, origin) {
+  const canonicalUrl = route.canonical === "/" ? origin : `${origin}${route.canonical}`;
+
+  return [
+    '<meta name="robots" content="noindex,follow,max-image-preview:large">',
+    `<meta name="description" content="${escapeHtmlAttr(route.description)}">`,
+    '<link rel="alternate" hreflang="sv-SE" href="' + canonicalUrl + '">',
+    '<link rel="alternate" hreflang="x-default" href="' + canonicalUrl + '">',
+    `<meta http-equiv="refresh" content="0;url=${route.refreshHref}">`,
+  ].join("\n");
+}
+
 async function buildPage(page, homeSeed, innerSeed) {
   const template = page.type === "home" ? homeSeed : innerSeed;
   const contentPath = path.join(ROOT, "src", "content", `${page.key}.html`);
@@ -393,6 +443,67 @@ async function buildPage(page, homeSeed, innerSeed) {
   await writeFile(outPath, html, "utf8");
 }
 
+async function buildLegacyRoute(route, innerSeed) {
+  const origin = await getSiteOrigin();
+  const canonicalUrl = route.canonical === "/" ? origin : `${origin}${route.canonical}`;
+  const entryContent = [
+    `<p>${route.description}</p>`,
+    `<p><a href="${route.targetHref}">Gå vidare till ${route.targetLabel}</a>.</p>`,
+  ].join("\n");
+
+  let html = innerSeed;
+  html = replaceOne(html, /<title>[\s\S]*?<\/title>/, `<title>${route.title}</title>`, "legacy-title");
+  html = replaceOne(
+    html,
+    /<meta name="robots" content="[^"]+">/,
+    buildLegacySeoBlock(route, origin),
+    "legacy-seo-meta"
+  );
+  html = replaceOne(
+    html,
+    /<link rel="canonical" href="[^"]+">/,
+    `<link rel="canonical" href="${canonicalUrl}">`,
+    "legacy-canonical"
+  );
+  html = replaceOne(html, /<body class="[^"]+">/, `<body class="${route.bodyClass}">`, "legacy-body-class");
+  html = replaceOne(
+    html,
+    /<article id="post-\d+" class="[^"]+">/,
+    '<article id="post-2000" class="post-2000 page type-page status-publish hentry clearfix">',
+    "legacy-article"
+  );
+  html = replaceOne(
+    html,
+    /<h1 class="entry-title">[\s\S]*?<\/h1>/,
+    `<h1 class="entry-title">${route.heading}</h1>`,
+    "legacy-entry-title"
+  );
+  html = replaceOne(
+    html,
+    /<div class="entry-content">[\s\S]*?<\/div>\s*<!-- \.entry-content -->/,
+    `<div class="entry-content">\n\t\t${entryContent.replace(/\n/g, "\n\t\t")}\n\t</div>\n<!-- .entry-content -->`,
+    "legacy-entry-content"
+  );
+
+  html = replaceOne(
+    html,
+    /<div class="menu-top-container"><ul id="primary-menu" class="menu">[\s\S]*?<\/ul><\/div>/,
+    renderMainMenu("home"),
+    "legacy-main-menu"
+  );
+  html = replaceOne(
+    html,
+    /<div id="footer-menu" class="menu"><ul>[\s\S]*?<\/ul><\/div>/,
+    renderFooterMenu("home"),
+    "legacy-footer-menu"
+  );
+  html = addExternalLinkAttrs(html);
+
+  const outPath = path.join(ROOT, ...route.outputPath);
+  await mkdir(path.dirname(outPath), { recursive: true });
+  await writeFile(outPath, html, "utf8");
+}
+
 async function getSiteOrigin() {
   try {
     const cname = (await readFile(path.join(ROOT, "CNAME"), "utf8")).trim();
@@ -435,6 +546,9 @@ async function main() {
 
   for (const page of pages) {
     await buildPage(page, homeSeed, innerSeed);
+  }
+  for (const route of legacyRoutes) {
+    await buildLegacyRoute(route, innerSeed);
   }
   await buildSitemap();
   await buildRobotsTxt();
